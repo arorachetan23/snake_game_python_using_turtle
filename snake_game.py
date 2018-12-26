@@ -1,6 +1,7 @@
 
 import turtle
 import time
+import random
 
 
 canvas=turtle.Screen()
@@ -41,7 +42,6 @@ def move_snake():
 		head.setx(x-20)		
 
 #head of the snake
-
 head=turtle.Turtle()
 head.speed(0)
 #ToDo: change the shape to triangle and then move accordingly
@@ -50,6 +50,15 @@ head.color("gray")
 head.penup() #so that it doesn't draw anything
 head.goto(0,0)
 head.direction="stop"
+
+#food 
+food=turtle.Turtle()
+food.speed(0)
+#ToDo: change the shape to triangle and then move accordingly
+food.shape("circle")
+food.color("green")
+food.penup() #so that it doesn't draw anything
+food.goto(0,100)
 
 delay=0.1
 
@@ -63,6 +72,10 @@ canvas.onkeypress(go_left,"a")
 while True:
 	canvas.update()
 	move_snake()
+	if head.distance(food)<20:
+		x=random.randint(-290,290)
+		y=random.randint(-290,290)
+		food.goto(x,y)
 	time.sleep(delay)
 
 
