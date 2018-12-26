@@ -3,6 +3,8 @@ import turtle
 import time
 import random
 
+score=0
+high_score=0
 
 canvas=turtle.Screen()
 canvas.title("Sanke Game")
@@ -11,19 +13,24 @@ canvas.bgcolor("#00bfff")
 canvas.tracer(0) #turn off all animation
 
 def go_up():
-	head.direction="up"
+	if head.direction!="down":
+		head.direction="up"
 
 
 def go_down():
-	head.direction="down"
+
+	if head.direction!="up":
+		head.direction="down"
 
 
 def go_left():
-	head.direction="left"
+	if head.direction!="right":
+		head.direction="left"
 
 
 def go_right():
-	head.direction="right"			
+	if head.direction!="left":
+		head.direction="right"			
 
 def move_snake():
 	y=head.ycor()
@@ -60,6 +67,17 @@ food.color("green")
 food.penup() #so that it doesn't draw anything
 food.goto(0,100)
 
+#for displaying score
+wr=turtle.Turtle()
+wr.shape("square")#will not be visible
+wr.speed(0)
+wr.color("white")
+wr.penup()
+wr.direction="stop"
+wr.hideturtle()
+wr.goto(0,310)
+wr.write("Score: 0 High Score: 0",align="center",font=("Courier",24,"normal"))
+
 delay=0.1
 
 segments=[]
@@ -73,11 +91,26 @@ canvas.onkeypress(go_left,"a")
 
 while True:
 	canvas.update()
+
+	#check collision with canvas boundary
+	if head.xcor()>340 or head.xcor()<-340 or head.ycor()>340 or head.ycor()<-340:
+		head.goto(0,0)
+		head.direction="stop"
+		for segment in segments:
+			segment.goto(1000,1000) #hide all the previous segments
+		segments.clear()
+		time.sleep(1)
+
+		score=0 
+		wr.clear()
+		wr.write("Score: {} High Score: {}".format(score,high_score),align="center",font=("Courier",24,"normal"))	
+		delay=0.1
+
 	
-	#check collision
+	#check collision with food
 	if head.distance(food)<20:
-		x=random.randint(-290,290)
-		y=random.randint(-290,290)
+		x=random.randint(-340,340)
+		y=random.randint(-340,340)
 		food.goto(x,y)
 	
 
@@ -87,6 +120,15 @@ while True:
 		new_segment.penup()
 		new_segment.shape("square")
 		segments.append(new_segment)
+
+		score+=10
+		if score>high_score:
+			high_score=score
+		wr.clear()	
+		wr.write("Score: {} High Score: {}".format(score,high_score),align="center",font=("Courier",24,"normal"))	
+
+		#make the game faster
+		delay-=0.001
 
 	for i in range(len(segments)-1,0,-1):
 		x=segments[i-1].xcor()
@@ -98,7 +140,29 @@ while True:
 		y=head.ycor()
 		segments[0].goto(x,y)
 			
-	move_snake()	
+	move_snake()
+
+	#check the collision of head with the body
+	for segment in segments:
+		if segment.distance(head)<20:
+			time.sleep(1)
+			head.goto(0,0)
+			head.direction="stop"
+			for segment in segments:
+				segment.goto(1000,1000) #hide all the previous segments
+		
+			
+			segments.clear()
+
+			score=0
+			wr.clear()
+			wr.write("Score: {} High Score: {}".format(score,high_score),align="center",font=("Courier",24,"normal"))	
+
+			#reset the delay
+			delay=0.1
+
+
+
 	time.sleep(delay)
 
 
