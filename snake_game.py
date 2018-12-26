@@ -1,4 +1,4 @@
-
+#reference: Christian Thompson @ Sanke game in Python
 import turtle
 import time
 import random
@@ -62,6 +62,8 @@ food.goto(0,100)
 
 delay=0.1
 
+segments=[]
+
 #keyboard setup
 canvas.listen()
 canvas.onkeypress(go_up,"w")
@@ -71,14 +73,33 @@ canvas.onkeypress(go_left,"a")
 
 while True:
 	canvas.update()
-	move_snake()
+	
+	#check collision
 	if head.distance(food)<20:
 		x=random.randint(-290,290)
 		y=random.randint(-290,290)
 		food.goto(x,y)
+	
+
+		new_segment=turtle.Turtle()
+		new_segment.speed(0)
+		new_segment.color("gray")
+		new_segment.penup()
+		new_segment.shape("square")
+		segments.append(new_segment)
+
+	for i in range(len(segments)-1,0,-1):
+		x=segments[i-1].xcor()
+		y=segments[i-1].ycor()
+		segments[i].goto(x,y)
+
+	if len(segments)>0:
+		x=head.xcor()
+		y=head.ycor()
+		segments[0].goto(x,y)
+			
+	move_snake()	
 	time.sleep(delay)
-
-
 
 
 canvas.mainloop()  # startover
